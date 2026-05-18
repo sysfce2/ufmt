@@ -1,6 +1,7 @@
 # Copyright 2022 Amethyst Reese, Tim Hatch
 # Licensed under the MIT license
 
+import io
 import os
 import tokenize
 from pathlib import Path
@@ -43,7 +44,8 @@ def normalize_content(
     No-op if ``newline`` is detected or given as ``b"\\n"``.
     """
     if newline is None:
-        newline = b"\r\n" if content.find(b"\r\n", 0, 1000) > -1 else b"\n"
+        lines = tokenize.detect_encoding(io.BytesIO(content).readline)[1]
+        newline = b"\r\n" if lines and lines[0].endswith(b"\r\n") else b"\n"
     if newline != b"\n":
         content = content.replace(newline, b"\n")
     return content, newline

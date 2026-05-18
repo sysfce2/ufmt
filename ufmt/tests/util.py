@@ -111,3 +111,13 @@ class UtilTest(TestCase):
                 result = ufmt.util.read_file(foo)
                 expected = (b"", "utf-8", b"\n")
                 self.assertTupleEqual(expected, result)
+
+    def test_line_endings(self) -> None:
+        # no op
+        self.assertEqual((b"a\nb\n", b"\n"), ufmt.util.normalize_content(b"a\nb\n"))
+        # dos newline
+        self.assertEqual(
+            (b"a\nb\n", b"\r\n"), ufmt.util.normalize_content(b"a\r\nb\r\n")
+        )
+        # mixed, leave alone if not first
+        self.assertEqual((b"a\nb\r\n", b"\n"), ufmt.util.normalize_content(b"a\nb\r\n"))
