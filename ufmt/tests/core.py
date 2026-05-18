@@ -743,6 +743,57 @@ class CoreTest(TestCase):
                 post_processor=None,
             )
 
+        with self.subTest("root with abs path name"):
+            list(
+                ufmt.ufmt_paths(
+                    [STDIN, Path("/bar/hello.py")], dry_run=True, root=Path("/foo")
+                )
+            )
+            stdin_mock.assert_called_with(
+                Path("/bar/hello.py"),
+                dry_run=True,
+                diff=False,
+                return_content=False,
+                ufmt_config_factory=None,
+                black_config_factory=None,
+                usort_config_factory=None,
+                pre_processor=None,
+                post_processor=None,
+            )
+
+        with self.subTest("root with rel path name"):
+            list(
+                ufmt.ufmt_paths(
+                    [STDIN, Path("hello.py")], dry_run=True, root=Path("/foo")
+                )
+            )
+            # TODO: not sure I'm happy with this
+            stdin_mock.assert_called_with(
+                Path("hello.py"),
+                dry_run=True,
+                diff=False,
+                return_content=False,
+                ufmt_config_factory=None,
+                black_config_factory=None,
+                usort_config_factory=None,
+                pre_processor=None,
+                post_processor=None,
+            )
+
+        with self.subTest("root no path name"):
+            list(ufmt.ufmt_paths([STDIN], dry_run=True, root=Path("/foo")))
+            stdin_mock.assert_called_with(
+                Path("/foo/stdin"),
+                dry_run=True,
+                diff=False,
+                return_content=False,
+                ufmt_config_factory=None,
+                black_config_factory=None,
+                usort_config_factory=None,
+                pre_processor=None,
+                post_processor=None,
+            )
+
         with self.subTest("extra args"):
             with self.assertRaisesRegex(ValueError, "too many stdin paths"):
                 list(

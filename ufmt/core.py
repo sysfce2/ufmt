@@ -425,7 +425,8 @@ def ufmt_paths(
     from STDIN using :func:`ufmt_stdin`. Results will be printed to STDOUT.
     A second path argument may be given, which represents the original content's true
     path name, and will be used when printing status messages, diffs, or errors.
-    Any further path names will result in a runtime error.
+    Any further path names will result in a runtime error.  If a path is not
+    explicitly provided, it falls back to ``--root`` and then to the working dir.
 
     See :func:`ufmt_file` for details on parameters, config factories,
     and post processors. All parameters are passed through to :func:`ufmt_file`.
@@ -443,6 +444,8 @@ def ufmt_paths(
             raise ValueError("too many stdin paths")
         elif len(paths) == 2:
             _, path = paths
+        elif root:
+            path = root / Path("stdin")
         else:
             path = Path("stdin")
         yield ufmt_stdin(
